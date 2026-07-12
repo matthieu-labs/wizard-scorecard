@@ -39,7 +39,7 @@
     padding-bottom: 60px;
   }
 
-  .shell { max-width: 820px; margin: 0 auto; padding: 0 16px; }
+  .shell { max-width: 560px; margin: 0 auto; padding: 0 16px; }
 
   header {
     padding: 28px 0 18px;
@@ -72,7 +72,14 @@
   .btn-ghost { background: transparent; }
   .btn-danger { color: var(--bad); }
   .btn-sm { padding: 6px 11px; font-size: 12px; }
+  .btn-block { width: 100%; padding: 13px; font-size: 14px; }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .dealer-tag {
+    color: var(--gold); font-size: 9.5px; font-weight: 700; letter-spacing: .04em;
+    margin-left: 8px; padding: 2px 6px; border: 1px solid rgba(246,201,69,0.4);
+    border-radius: 20px; vertical-align: middle; display: inline-block;
+  }
 
   /* ---------- SETUP ---------- */
   .card {
@@ -109,38 +116,66 @@
   .lb-name { font-size: 12px; color: var(--text-2); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
   .lb-score { font-size: 22px; font-weight: 800; margin-top: 2px; }
 
-  /* ---------- ROUND PANEL ---------- */
-  .round-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 6px; }
-  .round-head h2 { font-size: 16px; font-weight: 700; }
-  .round-meta { font-size: 12px; color: var(--text-3); }
-  .round-meta b { color: var(--text-2); }
-
-  .round-nav { display: flex; align-items: center; gap: 8px; }
-  .round-nav .btn-sm { padding: 6px 10px; }
-
-  table.round-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-  table.round-table th {
-    font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3);
-    text-align: left; padding: 0 8px 8px; font-weight: 600;
+  /* ---------- FLOW (per-player bid / trick entry) ---------- */
+  .flow-progress {
+    text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .09em; color: var(--accent); margin-bottom: 6px;
   }
-  table.round-table th.num-col, table.round-table td.num-col { text-align: center; width: 78px; }
-  table.round-table td { padding: 5px 8px; }
-  table.round-table td.name-cell { font-size: 13.5px; font-weight: 600; }
-  table.round-table .dealer-tag {
-    color: var(--gold); font-size: 9.5px; font-weight: 700; letter-spacing: .04em;
-    margin-left: 8px; padding: 2px 6px; border: 1px solid rgba(246,201,69,0.4);
-    border-radius: 20px; vertical-align: middle;
+  .flow-round-info { text-align: center; font-size: 12.5px; color: var(--text-3); margin-bottom: 22px; }
+  .flow-player-name { text-align: center; font-size: 27px; font-weight: 800; margin-bottom: 6px; }
+  .flow-question { text-align: center; font-size: 14px; color: var(--text-2); margin-bottom: 24px; }
+
+  .bubble-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 22px; }
+  .bubble {
+    width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    font-size: 16px; font-weight: 700; font-family: var(--font);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: border-color .12s, background .12s, transform .08s, box-shadow .12s;
   }
-  table.round-table input[type=number] { text-align: center; padding: 8px 6px; -moz-appearance: textfield; }
-  input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  table.round-table td.score-cell { text-align: center; font-weight: 700; font-size: 13.5px; }
-  .score-pos { color: var(--good); }
-  .score-neg { color: var(--bad); }
-  .score-zero { color: var(--text-3); }
+  .bubble:hover { border-color: var(--border-2); }
+  .bubble:active { transform: scale(0.94); }
+  .bubble.selected {
+    background: linear-gradient(135deg, var(--accent), #5b4bdb); border-color: transparent; color: #fff;
+    box-shadow: 0 4px 14px rgba(124,108,255,0.4);
+  }
 
-  .bid-warning { font-size: 11.5px; color: var(--gold); margin-top: 10px; }
+  .flow-error {
+    background: rgba(255,93,122,0.1); border: 1px solid rgba(255,93,122,0.35); color: var(--bad);
+    font-size: 12.5px; padding: 10px 14px; border-radius: var(--r-sm); margin-bottom: 18px; text-align: center;
+  }
 
-  .round-footer { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .flow-nav { display: flex; justify-content: center; }
+
+  /* ---------- PLAY / SUMMARY rows ---------- */
+  .prow {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 13px 0; border-bottom: 1px solid var(--border);
+  }
+  .prow:last-child { border-bottom: none; }
+  .prow-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; flex: 1; min-width: 0; }
+  .prow-name > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prow-mid { font-size: 12px; color: var(--text-3); text-align: center; flex-shrink: 0; }
+  .prow-mid b { color: var(--text-2); font-weight: 700; }
+  .prow-right { text-align: right; flex-shrink: 0; }
+  .prow-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; }
+  .prow-value { font-size: 17px; font-weight: 800; }
+  .prow-value.good { color: var(--good); }
+  .prow-value.bad { color: var(--bad); }
+
+  .badge { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+  .badge.made { background: rgba(61,220,132,0.14); color: var(--good); }
+  .badge.missed { background: rgba(255,93,122,0.14); color: var(--bad); }
+
+  .screen-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+  .screen-sub { font-size: 12.5px; color: var(--text-3); margin-bottom: 16px; }
+
+  /* ---------- GAME OVER ---------- */
+  .final-rank { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .final-rank:last-child { border-bottom: none; }
+  .final-place { font-size: 18px; font-weight: 800; color: var(--text-3); width: 30px; flex-shrink: 0; text-align: center; }
+  .final-name { flex: 1; font-size: 16px; font-weight: 700; }
+  .final-score { font-size: 20px; font-weight: 800; }
 
   /* ---------- HISTORY ---------- */
   .history-wrap { overflow-x: auto; }
@@ -155,18 +190,15 @@
   }
   table.history-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
   table.history-table tbody tr.current-row td.round-col { color: var(--accent); }
-  table.history-table td.editable { cursor: pointer; color: var(--text-2); }
-  table.history-table td.editable:hover { color: var(--text); text-decoration: underline; }
   table.history-table tfoot td { border-top: 1px solid var(--border); font-weight: 800; color: var(--text); }
-
-  .empty-hint { font-size: 12.5px; color: var(--text-3); text-align: center; padding: 30px 0; }
 
   .footer-note { text-align: center; font-size: 11.5px; color: var(--text-3); margin-top: 30px; }
 
   @media (max-width: 480px) {
     .lb-card { min-width: 92px; padding: 10px 10px; }
     .lb-score { font-size: 19px; }
-    table.round-table th, table.round-table td { padding: 5px 4px; }
+    .bubble { width: 44px; height: 44px; font-size: 15px; }
+    .flow-player-name { font-size: 23px; }
   }
 </style>
 </head>
@@ -199,48 +231,55 @@
         <span class="hint" style="margin:0;" id="rounds-hint"></span>
       </div>
     </div>
-    <button class="btn btn-primary" id="start-game-btn" style="width:100%; padding:13px; font-size:14px;">Start Game</button>
+    <button class="btn btn-primary btn-block" id="start-game-btn">Start Game</button>
   </div>
 
   <!-- GAME SCREEN -->
   <div id="game-screen" style="display:none;">
     <div class="leaderboard" id="leaderboard"></div>
 
-    <div class="card">
-      <div class="round-head">
-        <div>
-          <h2 id="round-title">Round 1</h2>
-          <div class="round-meta"><b id="round-cards">1</b> card(s) dealt · Dealer: <b id="round-dealer">—</b></div>
-        </div>
-        <div class="round-nav">
-          <button class="btn btn-sm" id="prev-round-btn">‹ Prev</button>
-          <button class="btn btn-sm" id="next-round-btn">Next ›</button>
-        </div>
+    <!-- BID / TRICK per-player flow -->
+    <div class="card" id="flow-screen">
+      <div class="flow-progress" id="flow-progress"></div>
+      <div class="flow-round-info" id="flow-round-info"></div>
+      <div id="flow-error" class="flow-error" style="display:none;"></div>
+      <div class="flow-player-name" id="flow-player-name"></div>
+      <div class="flow-question" id="flow-question"></div>
+      <div class="bubble-grid" id="bubble-grid"></div>
+      <div class="flow-nav">
+        <button class="btn btn-sm" id="flow-back-btn">‹ Back</button>
       </div>
+    </div>
 
-      <table class="round-table" id="round-table">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th class="num-col">Bid</th>
-            <th class="num-col">Tricks</th>
-            <th class="num-col">Score</th>
-          </tr>
-        </thead>
-        <tbody id="round-tbody"></tbody>
-      </table>
-
-      <div class="bid-warning" id="bid-warning" style="display:none;"></div>
-
-      <div class="round-footer">
-        <button class="btn btn-primary" id="submit-round-btn">Submit Round</button>
-        <span class="hint" id="round-status" style="align-self:center; margin:0;"></span>
+    <!-- ROUND IN PLAY (strategy view) -->
+    <div class="card" id="play-screen" style="display:none;">
+      <div class="screen-title">Round in play</div>
+      <div class="screen-sub" id="play-round-info"></div>
+      <div id="play-list"></div>
+      <button class="btn btn-primary btn-block" id="enter-tricks-btn" style="margin-top:16px;">Enter Tricks Won →</button>
+      <div style="text-align:center; margin-top:10px;">
+        <button class="btn btn-sm btn-ghost" id="edit-bids-btn">‹ Edit bids</button>
       </div>
+    </div>
+
+    <!-- ROUND SUMMARY -->
+    <div class="card" id="summary-screen" style="display:none;">
+      <div class="screen-title">Round results</div>
+      <div class="screen-sub" id="summary-round-info"></div>
+      <div id="summary-list"></div>
+      <button class="btn btn-primary btn-block" id="summary-continue-btn" style="margin-top:16px;"></button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div class="card" id="gameover-screen" style="display:none;">
+      <div class="screen-title">Final results 🏆</div>
+      <div id="gameover-list"></div>
+      <button class="btn btn-primary btn-block" id="play-again-btn" style="margin-top:16px;">New Game</button>
     </div>
 
     <div class="card">
       <h2>History</h2>
-      <div class="hint">Tap any bid/tricks cell to jump back and edit that round.</div>
+      <div class="hint">Bid / tricks won and round score for each completed round.</div>
       <div class="history-wrap">
         <table class="history-table" id="history-table"></table>
       </div>
@@ -251,16 +290,34 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'wizard-scorecard-state-v1';
+const STORAGE_KEY = 'wizard-scorecard-state-v2';
 const MIN_PLAYERS = 3, MAX_PLAYERS = 8;
 
-let state = null; // { players: [], rounds: n, currentRound: 0, data: [{bids:[],tricks:[],submitted:bool}] }
+/*
+  state = {
+    players: [name...], rounds: n, currentRound: r,
+    phase: 'bid' | 'play' | 'trick' | 'summary' | 'gameover',
+    stepIndex: i, flowError: string|null,
+    data: [{ bids: [n|null...], tricks: [n|null...], submitted: bool }, ...]
+  }
+*/
+let state = null;
 let setupPlayers = ['', '', ''];
 
 function scoreFor(bid, tricks) {
   if (bid === null || tricks === null || isNaN(bid) || isNaN(tricks)) return null;
   if (bid === tricks) return 20 + 10 * tricks;
   return -10 * Math.abs(bid - tricks);
+}
+
+function cardsInRound(r) { return r + 1; }
+
+function playerOrder(r) {
+  const n = state.players.length;
+  const dealerIdx = r % n;
+  const order = [];
+  for (let k = 1; k <= n; k++) order.push((dealerIdx + k) % n);
+  return order; // ends with dealerIdx
 }
 
 function save() {
@@ -272,6 +329,13 @@ function load() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) state = JSON.parse(raw);
   } catch (e) { state = null; }
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /* ---------------- SETUP SCREEN ---------------- */
@@ -302,13 +366,6 @@ function updateRoundsHint() {
   if (!roundsInput.dataset.touched) roundsInput.value = suggested;
 }
 
-function escapeAttr(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-}
-function escapeHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
 document.getElementById('add-player-btn').addEventListener('click', () => {
   if (setupPlayers.length >= MAX_PLAYERS) return;
   setupPlayers.push('');
@@ -330,6 +387,9 @@ document.getElementById('start-game-btn').addEventListener('click', () => {
     players: names,
     rounds,
     currentRound: 0,
+    phase: 'bid',
+    stepIndex: 0,
+    flowError: null,
     data: Array.from({ length: rounds }, () => ({
       bids: names.map(() => null),
       tricks: names.map(() => null),
@@ -340,7 +400,7 @@ document.getElementById('start-game-btn').addEventListener('click', () => {
   showGame();
 });
 
-/* ---------------- GAME SCREEN ---------------- */
+/* ---------------- SCORING HELPERS ---------------- */
 
 function totalsUpTo(roundIdxInclusive) {
   const totals = state.players.map(() => 0);
@@ -381,100 +441,230 @@ function renderLeaderboard() {
   }).join('');
 }
 
-function renderRoundPanel() {
+function renderSubtitle() {
+  const el = document.getElementById('subtitle');
+  if (!state) { el.textContent = 'Track bids & tricks — saved on this device'; return; }
   const r = state.currentRound;
-  const rd = state.data[r];
-  const cards = r + 1;
-  const dealerIdx = r % state.players.length;
-
-  document.getElementById('round-title').textContent = `Round ${r + 1} of ${state.rounds}`;
-  document.getElementById('round-cards').textContent = cards;
-  document.getElementById('round-dealer').textContent = state.players[dealerIdx];
-  document.getElementById('prev-round-btn').disabled = r === 0;
-  document.getElementById('next-round-btn').disabled = r === state.rounds - 1;
-
-  const tbody = document.getElementById('round-tbody');
-  tbody.innerHTML = state.players.map((name, pi) => {
-    const bid = rd.bids[pi];
-    const tricks = rd.tricks[pi];
-    const sc = scoreFor(bid, tricks);
-    let scClass = 'score-zero';
-    if (sc !== null) scClass = sc > 0 ? 'score-pos' : (sc < 0 ? 'score-neg' : 'score-zero');
-    return `
-      <tr>
-        <td class="name-cell">${escapeHtml(name)}${pi === dealerIdx ? '<span class="dealer-tag">DEALER</span>' : ''}</td>
-        <td class="num-col"><input type="number" class="bid-input" data-pi="${pi}" min="0" max="${cards}" value="${bid ?? ''}"></td>
-        <td class="num-col"><input type="number" class="tricks-input" data-pi="${pi}" min="0" max="${cards}" value="${tricks ?? ''}"></td>
-        <td class="num-col score-cell ${scClass}">${sc === null ? '—' : (sc > 0 ? '+' + sc : sc)}</td>
-      </tr>`;
-  }).join('');
-
-  tbody.querySelectorAll('.bid-input').forEach(inp => {
-    inp.addEventListener('input', e => {
-      const pi = +e.target.dataset.pi;
-      const v = e.target.value === '' ? null : Math.max(0, Math.min(cards, parseInt(e.target.value, 10)));
-      rd.bids[pi] = isNaN(v) ? null : v;
-      rd.submitted = false;
-      save();
-      renderRoundPanel();
-      renderBidWarning(cards, rd);
-    });
-  });
-  tbody.querySelectorAll('.tricks-input').forEach(inp => {
-    inp.addEventListener('input', e => {
-      const pi = +e.target.dataset.pi;
-      const v = e.target.value === '' ? null : Math.max(0, Math.min(cards, parseInt(e.target.value, 10)));
-      rd.tricks[pi] = isNaN(v) ? null : v;
-      rd.submitted = false;
-      save();
-      renderRoundPanel();
-    });
-  });
-
-  const submitBtn = document.getElementById('submit-round-btn');
-  const allBidsIn = rd.bids.every(b => b !== null);
-  const allTricksIn = rd.tricks.every(t => t !== null);
-  submitBtn.disabled = !(allBidsIn && allTricksIn);
-  submitBtn.textContent = rd.submitted ? 'Update Round' : 'Submit Round';
-  document.getElementById('round-status').textContent = rd.submitted ? '✓ Saved' : '';
-
-  renderBidWarning(cards, rd);
+  const phaseLabel = { bid: 'Bidding', play: 'Round in play', trick: 'Tricks won', summary: 'Round results', gameover: 'Game over' }[state.phase] || '';
+  el.textContent = state.phase === 'gameover'
+    ? `${state.players.length} players · ${state.rounds} rounds complete`
+    : `Round ${r + 1} of ${state.rounds} — ${phaseLabel}`;
 }
 
-function renderBidWarning(cards, rd) {
-  const warn = document.getElementById('bid-warning');
-  const bidsIn = rd.bids.filter(b => b !== null);
-  if (bidsIn.length === state.players.length) {
-    const sum = bidsIn.reduce((a, b) => a + b, 0);
-    if (sum === cards) {
-      warn.style.display = 'block';
-      warn.textContent = `⚠ Bids total exactly ${cards} (equal to cards dealt) — some house rules forbid this for the dealer.`;
-      return;
+/* ---------------- MAIN RENDER DISPATCH ---------------- */
+
+function render() {
+  if (!state) { showSetup(); return; }
+  renderLeaderboard();
+  renderSubtitle();
+  ['flow-screen', 'play-screen', 'summary-screen', 'gameover-screen'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (state.phase === 'bid' || state.phase === 'trick') {
+    renderFlow();
+    document.getElementById('flow-screen').style.display = 'block';
+  } else if (state.phase === 'play') {
+    renderPlay();
+    document.getElementById('play-screen').style.display = 'block';
+  } else if (state.phase === 'summary') {
+    renderSummary();
+    document.getElementById('summary-screen').style.display = 'block';
+  } else if (state.phase === 'gameover') {
+    renderGameOver();
+    document.getElementById('gameover-screen').style.display = 'block';
+  }
+  renderHistory();
+}
+
+/* ---------------- BID / TRICK FLOW ---------------- */
+
+function renderFlow() {
+  const r = state.currentRound;
+  const cards = cardsInRound(r);
+  const order = playerOrder(r);
+  const pi = order[state.stepIndex];
+  const dealerIdx = r % state.players.length;
+  const kind = state.phase; // 'bid' | 'trick'
+  const rd = state.data[r];
+  const arr = kind === 'bid' ? rd.bids : rd.tricks;
+
+  document.getElementById('flow-progress').textContent = `Player ${state.stepIndex + 1} of ${order.length}`;
+  document.getElementById('flow-round-info').textContent =
+    `Round ${r + 1} of ${state.rounds} · ${cards} card${cards === 1 ? '' : 's'} · ${kind === 'bid' ? 'Bidding' : 'Tricks Won'}`;
+  document.getElementById('flow-player-name').innerHTML =
+    escapeHtml(state.players[pi]) + (pi === dealerIdx ? '<span class="dealer-tag">DEALER</span>' : '');
+  document.getElementById('flow-question').textContent = kind === 'bid'
+    ? `How many tricks will ${state.players[pi]} bid?`
+    : `How many tricks did ${state.players[pi]} actually win?`;
+
+  const grid = document.getElementById('bubble-grid');
+  let html = '';
+  for (let v = 0; v <= cards; v++) {
+    html += `<button type="button" class="bubble ${arr[pi] === v ? 'selected' : ''}" data-v="${v}">${v}</button>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('.bubble').forEach(b => {
+    b.addEventListener('click', () => selectFlowValue(+b.dataset.v));
+  });
+
+  const errEl = document.getElementById('flow-error');
+  errEl.style.display = state.flowError ? 'block' : 'none';
+  errEl.textContent = state.flowError || '';
+
+  const backBtn = document.getElementById('flow-back-btn');
+  backBtn.disabled = kind === 'bid' && state.stepIndex === 0;
+}
+
+function selectFlowValue(v) {
+  const r = state.currentRound;
+  const cards = cardsInRound(r);
+  const order = playerOrder(r);
+  const pi = order[state.stepIndex];
+  const kind = state.phase;
+  const rd = state.data[r];
+  const arr = kind === 'bid' ? rd.bids : rd.tricks;
+  arr[pi] = v;
+  state.flowError = null;
+
+  if (state.stepIndex < order.length - 1) {
+    state.stepIndex++;
+  } else {
+    const sum = arr.reduce((a, b) => a + (b ?? 0), 0);
+    if (kind === 'bid') {
+      if (sum === cards) {
+        arr[pi] = null;
+        state.flowError = `Bids can't total exactly ${cards} — ${state.players[pi]} (dealer) must choose a different number.`;
+        save();
+        render();
+        return;
+      }
+      state.phase = 'play';
+      state.stepIndex = 0;
+    } else {
+      if (sum !== cards) {
+        state.flowError = `Tricks must total exactly ${cards} (currently ${sum}) — use Back to fix an entry.`;
+        save();
+        render();
+        return;
+      }
+      rd.submitted = true;
+      state.phase = 'summary';
     }
   }
-  warn.style.display = 'none';
+  save();
+  render();
 }
 
-document.getElementById('prev-round-btn').addEventListener('click', () => {
-  if (state.currentRound > 0) { state.currentRound--; save(); renderRoundPanel(); renderHistory(); }
-});
-document.getElementById('next-round-btn').addEventListener('click', () => {
-  if (state.currentRound < state.rounds - 1) { state.currentRound++; save(); renderRoundPanel(); renderHistory(); }
-});
-document.getElementById('submit-round-btn').addEventListener('click', () => {
-  const rd = state.data[state.currentRound];
-  rd.submitted = true;
-  save();
-  renderLeaderboard();
-  renderRoundPanel();
-  renderHistory();
-  if (state.currentRound < state.rounds - 1) {
-    state.currentRound++;
-    save();
-    renderRoundPanel();
-    renderHistory();
+document.getElementById('flow-back-btn').addEventListener('click', () => {
+  if (state.phase === 'bid' && state.stepIndex === 0) return;
+  state.flowError = null;
+  if (state.stepIndex > 0) {
+    state.stepIndex--;
+  } else if (state.phase === 'trick') {
+    state.phase = 'play';
   }
+  save();
+  render();
 });
+
+/* ---------------- PLAY (in-round strategy view) ---------------- */
+
+function renderPlay() {
+  const r = state.currentRound;
+  const rd = state.data[r];
+  const cards = cardsInRound(r);
+  const dealerIdx = r % state.players.length;
+  const priorTotals = totalsUpTo(r - 1);
+
+  document.getElementById('play-round-info').textContent =
+    `Round ${r + 1} of ${state.rounds} · ${cards} card${cards === 1 ? '' : 's'} — bids are locked in`;
+
+  document.getElementById('play-list').innerHTML = state.players.map((name, pi) => {
+    const bid = rd.bids[pi];
+    const cur = priorTotals[pi];
+    const proj = cur + scoreFor(bid, bid);
+    return `
+      <div class="prow">
+        <div class="prow-name"><span>${escapeHtml(name)}</span>${pi === dealerIdx ? '<span class="dealer-tag">DEALER</span>' : ''}</div>
+        <div class="prow-mid">bid <b>${bid}</b><br>now ${cur}</div>
+        <div class="prow-right"><div class="prow-label">if made</div><div class="prow-value good">${proj}</div></div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('enter-tricks-btn').addEventListener('click', () => {
+  state.phase = 'trick';
+  state.stepIndex = 0;
+  state.flowError = null;
+  save();
+  render();
+});
+document.getElementById('edit-bids-btn').addEventListener('click', () => {
+  state.phase = 'bid';
+  state.stepIndex = 0;
+  state.flowError = null;
+  save();
+  render();
+});
+
+/* ---------------- ROUND SUMMARY ---------------- */
+
+function renderSummary() {
+  const r = state.currentRound;
+  const rd = state.data[r];
+  const dealerIdx = r % state.players.length;
+  const totals = totalsUpTo(r);
+
+  document.getElementById('summary-round-info').textContent = `Round ${r + 1} of ${state.rounds}`;
+
+  document.getElementById('summary-list').innerHTML = state.players.map((name, pi) => {
+    const bid = rd.bids[pi], tricks = rd.tricks[pi];
+    const sc = scoreFor(bid, tricks);
+    const made = bid === tricks;
+    return `
+      <div class="prow">
+        <div class="prow-name"><span>${escapeHtml(name)}</span>${pi === dealerIdx ? '<span class="dealer-tag">DEALER</span>' : ''}</div>
+        <div class="prow-mid">${bid} bid → ${tricks} won<span class="badge ${made ? 'made' : 'missed'}">${made ? 'MADE' : 'MISSED'}</span></div>
+        <div class="prow-right"><div class="prow-label">total ${totals[pi]}</div><div class="prow-value ${sc >= 0 ? 'good' : 'bad'}">${sc > 0 ? '+' + sc : sc}</div></div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('summary-continue-btn').textContent =
+    r < state.rounds - 1 ? `Start Round ${r + 2} →` : 'See Final Results 🏆';
+}
+
+document.getElementById('summary-continue-btn').addEventListener('click', () => {
+  const r = state.currentRound;
+  if (r < state.rounds - 1) {
+    state.currentRound++;
+    state.phase = 'bid';
+    state.stepIndex = 0;
+  } else {
+    state.phase = 'gameover';
+  }
+  state.flowError = null;
+  save();
+  render();
+});
+
+/* ---------------- GAME OVER ---------------- */
+
+function renderGameOver() {
+  const totals = totalsUpTo(state.rounds - 1);
+  const order = state.players.map((name, i) => ({ name, total: totals[i] })).sort((a, b) => b.total - a.total);
+  const max = order[0].total;
+
+  document.getElementById('gameover-list').innerHTML = order.map((p, idx) => `
+    <div class="final-rank">
+      <div class="final-place">${p.total === max ? '👑' : (idx + 1)}</div>
+      <div class="final-name">${escapeHtml(p.name)}</div>
+      <div class="final-score">${p.total}</div>
+    </div>`).join('');
+}
+
+document.getElementById('play-again-btn').addEventListener('click', resetGame);
+
+/* ---------------- HISTORY ---------------- */
 
 function renderHistory() {
   const table = document.getElementById('history-table');
@@ -490,64 +680,44 @@ function renderHistory() {
     rows += `<tr class="${cur}"><td class="round-col">R${r + 1} <span style="color:var(--text-3);font-weight:400;">(${r + 1} card${r === 0 ? '' : 's'})</span></td>`;
     state.players.forEach((_, pi) => {
       const bid = rd.bids[pi], tricks = rd.tricks[pi];
-      const sc = scoreFor(bid, tricks);
-      const cellText = (bid === null && tricks === null) ? '·' :
-        `${bid ?? '?'}/${tricks ?? '?'}${sc !== null ? ` (${sc > 0 ? '+' + sc : sc})` : ''}`;
-      rows += `<td class="editable" data-round="${r}">${cellText}</td>`;
+      const sc = rd.submitted ? scoreFor(bid, tricks) : null;
+      const cellText = !rd.submitted ? '·' : `${bid}/${tricks} (${sc > 0 ? '+' + sc : sc})`;
+      rows += `<td>${cellText}</td>`;
     });
     rows += `</tr>`;
   }
 
-  let totals = state.players.map((_, pi) => {
-    let t = 0;
-    for (let r = 0; r < state.rounds; r++) {
-      const rd = state.data[r];
-      if (!rd.submitted) continue;
-      const s = scoreFor(rd.bids[pi], rd.tricks[pi]);
-      if (s !== null) t += s;
-    }
-    return t;
-  });
+  const totals = totalsUpTo(state.rounds - 1);
   let tfoot = `<tfoot><tr><td class="round-col">Total</td>` +
     totals.map(t => `<td>${t}</td>`).join('') + `</tr></tfoot>`;
 
   table.innerHTML = thead + `<tbody>${rows}</tbody>` + tfoot;
-
-  table.querySelectorAll('td.editable').forEach(td => {
-    td.addEventListener('click', () => {
-      state.currentRound = +td.dataset.round;
-      save();
-      renderRoundPanel();
-      renderHistory();
-      document.getElementById('round-table').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-  });
 }
 
-document.getElementById('new-game-btn').addEventListener('click', () => {
+/* ---------------- NEW GAME / SCREEN SWITCH ---------------- */
+
+function resetGame() {
   if (confirm('Start a new game? This will erase the current scorecard.')) {
     localStorage.removeItem(STORAGE_KEY);
     state = null;
     setupPlayers = ['', '', ''];
     showSetup();
   }
-});
+}
+document.getElementById('new-game-btn').addEventListener('click', resetGame);
 
 function showGame() {
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('game-screen').style.display = 'block';
   document.getElementById('header-actions').style.display = 'block';
-  document.getElementById('subtitle').textContent = `${state.players.length} players · ${state.rounds} rounds`;
-  renderLeaderboard();
-  renderRoundPanel();
-  renderHistory();
+  render();
 }
 
 function showSetup() {
   document.getElementById('setup-screen').style.display = 'block';
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('header-actions').style.display = 'none';
-  document.getElementById('subtitle').textContent = "Track bids & tricks — saved on this device";
+  renderSubtitle();
   renderSetup();
 }
 
