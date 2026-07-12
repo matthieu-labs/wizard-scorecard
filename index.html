@@ -139,6 +139,12 @@
     background: linear-gradient(135deg, var(--accent), #5b4bdb); border-color: transparent; color: #fff;
     box-shadow: 0 4px 14px rgba(124,108,255,0.4);
   }
+  .bubble.disabled {
+    opacity: 0.4; color: var(--text-3); text-decoration: line-through; cursor: not-allowed;
+  }
+  .bubble.disabled:hover, .bubble.disabled:active {
+    border-color: var(--border); transform: none;
+  }
 
   .flow-error {
     background: rgba(255,93,122,0.1); border: 1px solid rgba(255,93,122,0.35); color: var(--bad);
@@ -497,14 +503,33 @@ function renderFlow() {
     ? `How many tricks will ${state.players[pi]} bid?`
     : `How many tricks did ${state.players[pi]} actually win?`;
 
+  let forbiddenValue = null;
+  let forbiddenMsg = '';
+  if (kind === 'bid' && state.stepIndex === order.length - 1) {
+    const othersSum = order.slice(0, -1).reduce((a, idx) => a + (arr[idx] ?? 0), 0);
+    const fv = cards - othersSum;
+    if (fv >= 0 && fv <= cards) {
+      forbiddenValue = fv;
+      forbiddenMsg = `Bids can't total exactly ${cards} — as dealer, ${state.players[pi]} can't bid ${forbiddenValue}.`;
+    }
+  }
+
   const grid = document.getElementById('bubble-grid');
   let html = '';
   for (let v = 0; v <= cards; v++) {
-    html += `<button type="button" class="bubble ${arr[pi] === v ? 'selected' : ''}" data-v="${v}">${v}</button>`;
+    const isForbidden = v === forbiddenValue;
+    const cls = arr[pi] === v ? 'selected' : (isForbidden ? 'disabled' : '');
+    html += `<button type="button" class="bubble ${cls}" data-v="${v}" ${isForbidden ? `data-forbidden="1" title="${escapeAttr(forbiddenMsg)}"` : ''}>${v}</button>`;
   }
   grid.innerHTML = html;
   grid.querySelectorAll('.bubble').forEach(b => {
-    b.addEventListener('click', () => selectFlowValue(+b.dataset.v));
+    if (b.dataset.forbidden === '1') {
+      const reveal = () => showFlowTooltip(forbiddenMsg);
+      b.addEventListener('click', reveal);
+      b.addEventListener('mouseenter', reveal);
+    } else {
+      b.addEventListener('click', () => selectFlowValue(+b.dataset.v));
+    }
   });
 
   const errEl = document.getElementById('flow-error');
@@ -513,6 +538,12 @@ function renderFlow() {
 
   const backBtn = document.getElementById('flow-back-btn');
   backBtn.disabled = kind === 'bid' && state.stepIndex === 0;
+}
+
+function showFlowTooltip(msg) {
+  const errEl = document.getElementById('flow-error');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
 }
 
 function selectFlowValue(v) {
